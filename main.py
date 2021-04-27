@@ -102,22 +102,24 @@ def index():
 def multipleArtists():
 
     if request.method == "GET":
+        print("-"*30)
+        print(request.json)
         result = Artist.query.all()
         return jsonify([item.serialize for item in result]), 200
 
 
     elif request.method == "POST":
         print("-"*30)
-        print(request.form)
-        if not ("name" in request.form and\
-                isinstance(request.form["name"], str) and\
-                "age" in request.form and\
-                request.form["age"].isnumeric()):
+        print(request.json)
+        if not ("name" in request.json and\
+                isinstance(request.json["name"], str) and\
+                "age" in request.json and\
+                isinstance(request.json["age"], int)):
             
             abort(400)
 
 
-        id = b64encode(request.form["name"].encode()).decode('utf-8')
+        id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
             id = id[:ID_LENGTH_LIMIT]
 
@@ -126,8 +128,8 @@ def multipleArtists():
             abort(409)
 
         artist = Artist(id=id,
-                        name=request.form["name"],
-                        age=request.form["age"]
+                        name=request.json["name"],
+                        age=request.json["age"]
                         )
                     
         db.session.add(artist)
@@ -244,13 +246,13 @@ def artistAlbums(artist_id):
 
     elif request.method == "POST":
 
-        if not ("name" in request.form and\
-            isinstance(request.form["name"], str) and\
-            "genre" in request.form and\
-            isinstance(request.form["age"], str)):
+        if not ("name" in request.json and\
+            isinstance(request.json["name"], str) and\
+            "genre" in request.json and\
+            isinstance(request.json["age"], str)):
             abort(400)
 
-        id = b64encode(request.form["name"].encode()).decode('utf-8')
+        id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
             id = id[:ID_LENGTH_LIMIT]
 
@@ -263,8 +265,8 @@ def artistAlbums(artist_id):
             abort(422)
         
         album = Album(id=id,
-                        name=request.form["name"],
-                        genre=request.form["genre"],
+                        name=request.json["name"],
+                        genre=request.json["genre"],
                         artist_id=artist_id
                         )
                     
@@ -303,13 +305,13 @@ def albumTracks(album_id):
     elif request.method == "POST":
 
 
-        if not ("name" in request.form and\
-            isinstance(request.form["name"], str) and\
-            "duration" in request.form and\
-            isinstance(request.form["age"], float)):
+        if not ("name" in request.json and\
+            isinstance(request.json["name"], str) and\
+            "duration" in request.json and\
+            isinstance(request.json["age"], float)):
             abort(400)
 
-        id = b64encode(request.form["name"].encode()).decode('utf-8')
+        id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
             id = id[:ID_LENGTH_LIMIT]
 
@@ -322,8 +324,8 @@ def albumTracks(album_id):
             abort(422)
 
         album = Track(id=id,
-                        name=request.form["name"],
-                        duration=request.form["duration"],
+                        name=request.json["name"],
+                        duration=request.json["duration"],
                         times_played=0,
                         album_id=album_id
                         )
