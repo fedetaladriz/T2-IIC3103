@@ -308,6 +308,7 @@ def albumTracks(album_id):
                 isinstance(request.json["name"], str) and\
                 request.json.get("duration") and\
                 isinstance(request.json["duration"], float)):
+            abort(400)
 
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
