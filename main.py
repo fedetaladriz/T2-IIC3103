@@ -107,10 +107,13 @@ def multipleArtists():
 
 
     elif request.method == "POST":
+        print("-"*30)
+        print(request.form)
         if not ("name" in request.form and\
                 isinstance(request.form["name"], str) and\
                 "age" in request.form and\
-                isinstance(request.form["age"], int)):
+                request.form["age"].isnumeric()):
+            
             abort(400)
 
 
@@ -377,4 +380,4 @@ def playTrack(track_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
