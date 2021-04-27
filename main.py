@@ -102,15 +102,15 @@ def index():
 def multipleArtists():
 
     if request.method == "GET":
-        print("-"*30)
-        print(request.json)
+        # print("-"*30)
+        # print(request.json)
         result = Artist.query.all()
         return jsonify([item.serialize for item in result]), 200
 
 
     elif request.method == "POST":
-        print("-"*30)
-        print(request.json)
+        # print("-"*30)
+        # print(request.json)
         if not ("name" in request.json and\
                 isinstance(request.json["name"], str) and\
                 "age" in request.json and\
