@@ -26,7 +26,7 @@ class Artist(db.Model):
         url = f"{request.url_root}artists/{self.id}"
 
         return {
-           'id': self.id,
+        #    'id': self.id,
            'name': self.name, 
            'age': self.age, 
            'self': url,
@@ -50,7 +50,7 @@ class Album(db.Model):
         url = f"{request.url_root}albums/{self.id}"
 
         return {
-           'id': self.id,
+        #    'id': self.id,
            'artist_id': self.artist_id,
            'name': self.name, 
            'genre': self.genre, 
@@ -76,7 +76,7 @@ class Track(db.Model):
     def serialize(self):
 
         return {
-           'id': self.id,
+        #    'id': self.id,
            'album_id': self.album_id,
            'name': self.name, 
            'duration': self.duration, 
@@ -109,8 +109,8 @@ def multipleArtists():
 
 
     elif request.method == "POST":
-        print("-"*30)
-        print(request.json)
+        # print("-"*30)
+        # print(request.json)
         if not ("name" in request.json and\
                 isinstance(request.json["name"], str) and\
                 "age" in request.json and\
@@ -382,4 +382,4 @@ def playTrack(track_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
