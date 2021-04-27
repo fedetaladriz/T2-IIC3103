@@ -249,7 +249,7 @@ def artistAlbums(artist_id):
         if not ("name" in request.json and\
             isinstance(request.json["name"], str) and\
             "genre" in request.json and\
-            isinstance(request.json["age"], str)):
+            isinstance(request.json["genre"], str)):
             abort(400)
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
@@ -308,7 +308,7 @@ def albumTracks(album_id):
         if not ("name" in request.json and\
             isinstance(request.json["name"], str) and\
             "duration" in request.json and\
-            isinstance(request.json["age"], float)):
+            isinstance(request.json["duration"], float)):
             abort(400)
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
