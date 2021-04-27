@@ -307,7 +307,7 @@ def albumTracks(album_id):
         if not (request.json.get("name") and\
                 isinstance(request.json["name"], str) and\
                 request.json.get("duration") and\
-                isinstance(request.json["duration"], float)):
+                (isinstance(request.json["duration"], float) or isinstance(request.json["duration"], int))):
             abort(400)
 
 
