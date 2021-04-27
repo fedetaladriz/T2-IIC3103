@@ -109,8 +109,8 @@ def multipleArtists():
 
 
     elif request.method == "POST":
-        # print("-"*30)
-        # print(request.json)
+        print("-"*30)
+        print(request.json)
         if not ("name" in request.json and\
                 isinstance(request.json["name"], str) and\
                 "age" in request.json and\
@@ -382,4 +382,4 @@ def playTrack(track_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
