@@ -109,14 +109,19 @@ def multipleArtists():
 
 
     elif request.method == "POST":
+        print("-"*30)
+        print(request.json)
+        # print("No key:", request.json.get("namfsrfe"))
+        # print("name:", request.json.get("name"))
         # print("-"*30)
         # print(request.json)
-        # if not ("name" in request.json and\
-        #         isinstance(request.json["name"], str) and\
-        #         "age" in request.json and\
-        #         isinstance(request.json["age"], int)):
-            
-        #     abort(400)
+        if not (request.json.get("name") and\
+
+                isinstance(request.json["name"], str) and\
+                request.json.get("age") and\
+                isinstance(request.json["age"], int)):
+            print("BAD REQUEST")
+            abort(400)
 
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
@@ -245,12 +250,16 @@ def artistAlbums(artist_id):
 
 
     elif request.method == "POST":
-
-        # if not ("name" in request.json and\
-        #     isinstance(request.json["name"], str) and\
-        #     "genre" in request.json and\
-        #     isinstance(request.json["genre"], str)):
-        #     abort(400)
+        
+        print("-"*30)
+        print(request.json)
+        
+        if not (request.json.get("name") and\
+                isinstance(request.json["name"], str) and\
+                request.json.get("genre") and\
+                isinstance(request.json["genre"], str)):
+            print("BAD REQUEST")
+            abort(400)
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
@@ -292,7 +301,7 @@ def artistTracks(artist_id):
 
 @app.route('/albums/<album_id>/tracks', methods=["GET", "POST"])
 def albumTracks(album_id):
-
+    
     if request.method == "GET":
         album = Album.query.get(album_id)
         
@@ -303,13 +312,16 @@ def albumTracks(album_id):
 
 
     elif request.method == "POST":
+        
+        print("-"*30)
+        print(request.json)
 
-
-        # if not ("name" in request.json and\
-        #     isinstance(request.json["name"], str) and\
-        #     "duration" in request.json and\
-        #     isinstance(request.json["duration"], float)):
-        #     abort(400)
+        if not (request.json.get("name") and\
+                isinstance(request.json["name"], str) and\
+                request.json.get("duration") and\
+                isinstance(request.json["duration"], float)):
+            print("BAD REQUEST")
+            abort(400)
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
