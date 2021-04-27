@@ -8,6 +8,8 @@ api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
+ID_LENGTH_LIMIT = 22
+
 # db.drop_all()
 
 
@@ -24,15 +26,14 @@ class Artist(db.Model):
         url = f"{request.url_root}artists/{self.id}"
 
         return {
+           'id': self.id,
            'name': self.name, 
            'age': self.age, 
            'self': url,
            'tracks': url + "/tracks",
            'albums': url + "/albums"
        }
-
-       
-
+    
 
 class Album(db.Model):
     id = db.Column(db.String, primary_key=True)
@@ -49,6 +50,8 @@ class Album(db.Model):
         url = f"{request.url_root}albums/{self.id}"
 
         return {
+           'id': self.id,
+           'artist_id': self.artist_id,
            'name': self.name, 
            'genre': self.genre, 
            'self': url,
@@ -73,6 +76,8 @@ class Track(db.Model):
     def serialize(self):
 
         return {
+           'id': self.id,
+           'album_id': self.album_id,
            'name': self.name, 
            'duration': self.duration, 
            'times_played': self.times_played, 
@@ -87,7 +92,7 @@ db.create_all()
 
 @app.route("/")
 def index():
-    return request.base_url
+    return "Hello stranger"
 
 ###########################
 ### COMPLETE TABLE
@@ -97,15 +102,27 @@ def index():
 def multipleArtists():
 
     if request.method == "GET":
-
         result = Artist.query.all()
-        if not result:
-            abort(404, message="No artists found!")
-        return jsonify([item.serialize for item in result])
+        return jsonify([item.serialize for item in result]), 200
+
 
     elif request.method == "POST":
+        if not ("name" in request.form and\
+                isinstance(request.form["name"], str) and\
+                "age" in request.form and\
+                isinstance(request.form["age"], int)):
+            abort(400)
 
-        artist = Artist(id=b64encode(request.form["name"].encode()).decode('utf-8'),
+
+        id = b64encode(request.form["name"].encode()).decode('utf-8')
+        if len(id) > ID_LENGTH_LIMIT:
+            id = id[:ID_LENGTH_LIMIT]
+
+        result = Artist.query.get(id)
+        if result:
+            abort(409)
+
+        artist = Artist(id=id,
                         name=request.form["name"],
                         age=request.form["age"]
                         )
@@ -120,22 +137,14 @@ def multipleArtists():
 def multipleAlbums():
 
     result = Album.query.all()
-    if not result:
-        print("-"*20)
-        abort(404, message="No albums found!")
     
-    return jsonify([item.serialize for item in result])
+    return jsonify([item.serialize for item in result]), 200
     
 
 @app.route("/tracks", methods=["GET"])
 def multipleTracks():
-
     result = Track.query.all()
-    if not result:
-        print("-"*20)
-        abort(404, message="No tracks found!")
-    
-    return jsonify([item.serialize for item in result])
+    return jsonify([item.serialize for item in result]), 200
 
 ########################### 
 ### SEARCH BY ID
@@ -221,17 +230,36 @@ def singleTrack(track_id):
 def artistAlbums(artist_id):
 
     if request.method == "GET":
-        result = Album.query.filter_by(artist_id=artist_id).all()
-        print("-frr"*20)
-        print(result)
-        print(bool(result))
-        if not result:
-            abort(404, message="No albums found!")
-        return jsonify([item.serialize for item in result])
+        artist = Artist.query.get(artist_id)
+        if not artist:
+            abort(404, message="Artist not found!")
+        
+        #result = Album.query.filter_by(artist_id=artist_id).all()
+
+        return jsonify([item.serialize for item in artist.albums]), 200
 
 
     elif request.method == "POST":
-        album = Album(id=b64encode(request.form["name"].encode()).decode('utf-8'),
+
+        if not ("name" in request.form and\
+            isinstance(request.form["name"], str) and\
+            "genre" in request.form and\
+            isinstance(request.form["age"], str)):
+            abort(400)
+
+        id = b64encode(request.form["name"].encode()).decode('utf-8')
+        if len(id) > ID_LENGTH_LIMIT:
+            id = id[:ID_LENGTH_LIMIT]
+
+        result = Album.query.get(id)
+        if result:
+            abort(409)
+        
+        artist = Artist.query.get(artist_id)
+        if not artist:
+            abort(422)
+        
+        album = Album(id=id,
                         name=request.form["name"],
                         genre=request.form["genre"],
                         artist_id=artist_id
@@ -245,16 +273,15 @@ def artistAlbums(artist_id):
 @app.route('/artists/<artist_id>/tracks', methods=["GET"])
 def artistTracks(artist_id):
 
-    albums = Album.query.filter_by(artist_id=artist_id).all()
+    artist = Artist.query.get(artist_id)
+    if not artist:
+        abort(404, message="Artist not found!")
     
     result = []
-    for album in albums:
-        result.extend(Track.query.filter_by(album_id=album.id).all())
+    for album in artist.albums:
+        result.extend(album.tracks)
 
-    if not result:
-        abort(404, message="No tracks found!")
-
-    return jsonify([item.serialize for item in result])
+    return jsonify([item.serialize for item in result]), 200
 
 
 
@@ -262,17 +289,36 @@ def artistTracks(artist_id):
 def albumTracks(album_id):
 
     if request.method == "GET":
-        result = Track.query.filter_by(album_id=album_id).all()
-        print("-frr"*20)
-        print(result)
-        print(bool(result))
-        if not result:
-            abort(404, message="No albums found!")
-        return jsonify([item.serialize for item in result])
+        album = Album.query.get(album_id)
+        
+        if not album:
+            abort(404, message="Album not found!")
+
+        return jsonify([item.serialize for item in album.tracks]), 200
 
 
     elif request.method == "POST":
-        album = Track(id=b64encode(request.form["name"].encode()).decode('utf-8'),
+
+
+        if not ("name" in request.form and\
+            isinstance(request.form["name"], str) and\
+            "duration" in request.form and\
+            isinstance(request.form["age"], float)):
+            abort(400)
+
+        id = b64encode(request.form["name"].encode()).decode('utf-8')
+        if len(id) > ID_LENGTH_LIMIT:
+            id = id[:ID_LENGTH_LIMIT]
+
+        result = Track.query.get(id)
+        if result:
+            abort(409)
+
+        album = Album.query.get(album_id)
+        if not album:
+            abort(422)
+
+        album = Track(id=id,
                         name=request.form["name"],
                         duration=request.form["duration"],
                         times_played=0,
@@ -291,7 +337,11 @@ def albumTracks(album_id):
 
 @app.route('/artists/<artist_id>/albums/play', methods=["PUT"])
 def playArtist(artist_id):
+    
     artist = Artist.query.get(artist_id)
+    if not artist:
+        abort(404)
+
     for album in artist.albums:
         for track in album.tracks:
             track.times_played+=1
@@ -303,6 +353,9 @@ def playArtist(artist_id):
 @app.route('/albums/<album_id>/tracks/play', methods=["PUT"])
 def playAlbum(album_id):
     album = Album.query.get(album_id)
+    if not album:
+        abort(404)
+
     for track in album.tracks:
         track.times_played+=1
 
@@ -313,6 +366,9 @@ def playAlbum(album_id):
 @app.route('/tracks/<track_id>/play', methods=["PUT"])
 def playTrack(track_id):
     track = Track.query.get(track_id)
+    if not track:
+        abort(404)
+
     track.times_played +=1
 
     db.session.commit()
