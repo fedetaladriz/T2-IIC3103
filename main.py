@@ -102,25 +102,17 @@ def index():
 def multipleArtists():
 
     if request.method == "GET":
-        # print("-"*30)
-        # print(request.json)
         result = Artist.query.all()
         return jsonify([item.serialize for item in result]), 200
 
 
     elif request.method == "POST":
-        print("-"*30)
-        print(request.json)
-        # print("No key:", request.json.get("namfsrfe"))
-        # print("name:", request.json.get("name"))
-        # print("-"*30)
-        # print(request.json)
+
         if not (request.json.get("name") and\
 
                 isinstance(request.json["name"], str) and\
                 request.json.get("age") and\
                 isinstance(request.json["age"], int)):
-            print("BAD REQUEST")
             abort(400)
 
 
@@ -129,8 +121,10 @@ def multipleArtists():
             id = id[:ID_LENGTH_LIMIT]
 
         result = Artist.query.get(id)
+        
         if result:
-            abort(409)
+            return jsonify(result.serialize), 409
+
 
         artist = Artist(id=id,
                         name=request.json["name"],
@@ -251,14 +245,11 @@ def artistAlbums(artist_id):
 
     elif request.method == "POST":
         
-        print("-"*30)
-        print(request.json)
-        
         if not (request.json.get("name") and\
                 isinstance(request.json["name"], str) and\
                 request.json.get("genre") and\
                 isinstance(request.json["genre"], str)):
-            print("BAD REQUEST")
+
             abort(400)
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
@@ -267,7 +258,7 @@ def artistAlbums(artist_id):
 
         result = Album.query.get(id)
         if result:
-            abort(409)
+            return jsonify(result.serialize), 409
         
         artist = Artist.query.get(artist_id)
         if not artist:
@@ -312,16 +303,12 @@ def albumTracks(album_id):
 
 
     elif request.method == "POST":
-        
-        print("-"*30)
-        print(request.json)
 
         if not (request.json.get("name") and\
                 isinstance(request.json["name"], str) and\
                 request.json.get("duration") and\
                 isinstance(request.json["duration"], float)):
-            print("BAD REQUEST")
-            abort(400)
+
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
@@ -329,7 +316,7 @@ def albumTracks(album_id):
 
         result = Track.query.get(id)
         if result:
-            abort(409)
+            return jsonify(result.serialize), 409
 
         album = Album.query.get(album_id)
         if not album:
