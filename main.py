@@ -111,12 +111,12 @@ def multipleArtists():
     elif request.method == "POST":
         # print("-"*30)
         # print(request.json)
-        if not ("name" in request.json and\
-                isinstance(request.json["name"], str) and\
-                "age" in request.json and\
-                isinstance(request.json["age"], int)):
+        # if not ("name" in request.json and\
+        #         isinstance(request.json["name"], str) and\
+        #         "age" in request.json and\
+        #         isinstance(request.json["age"], int)):
             
-            abort(400)
+        #     abort(400)
 
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
@@ -246,11 +246,11 @@ def artistAlbums(artist_id):
 
     elif request.method == "POST":
 
-        if not ("name" in request.json and\
-            isinstance(request.json["name"], str) and\
-            "genre" in request.json and\
-            isinstance(request.json["genre"], str)):
-            abort(400)
+        # if not ("name" in request.json and\
+        #     isinstance(request.json["name"], str) and\
+        #     "genre" in request.json and\
+        #     isinstance(request.json["genre"], str)):
+        #     abort(400)
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
@@ -305,11 +305,11 @@ def albumTracks(album_id):
     elif request.method == "POST":
 
 
-        if not ("name" in request.json and\
-            isinstance(request.json["name"], str) and\
-            "duration" in request.json and\
-            isinstance(request.json["duration"], float)):
-            abort(400)
+        # if not ("name" in request.json and\
+        #     isinstance(request.json["name"], str) and\
+        #     "duration" in request.json and\
+        #     isinstance(request.json["duration"], float)):
+        #     abort(400)
 
         id = b64encode(request.json["name"].encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
@@ -382,4 +382,4 @@ def playTrack(track_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
