@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 ID_LENGTH_LIMIT = 22
 
 # db.drop_all()
-
+#
 
 class Artist(db.Model):
     id = db.Column(db.String, primary_key=True)
