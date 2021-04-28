@@ -107,7 +107,8 @@ def multipleArtists():
 
 
     elif request.method == "POST":
-
+        print("-"*30)
+        print(request.json)
         if not (request.json.get("name") and\
 
                 isinstance(request.json["name"], str) and\
@@ -244,7 +245,8 @@ def artistAlbums(artist_id):
 
 
     elif request.method == "POST":
-        
+        print("-"*30)
+        print(request.json)
         if not (request.json.get("name") and\
                 isinstance(request.json["name"], str) and\
                 request.json.get("genre") and\
@@ -303,7 +305,8 @@ def albumTracks(album_id):
 
 
     elif request.method == "POST":
-
+        print("-"*30)
+        print(request.json)
         if not (request.json.get("name") and\
                 isinstance(request.json["name"], str) and\
                 request.json.get("duration") and\
@@ -382,4 +385,4 @@ def playTrack(track_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
