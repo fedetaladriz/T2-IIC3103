@@ -254,7 +254,7 @@ def artistAlbums(artist_id):
 
             abort(400)
 
-        id = b64encode(request.json["name"].encode()).decode('utf-8')
+        id = b64encode(f"{request.json['name']}:{artist_id}".encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
             id = id[:ID_LENGTH_LIMIT]
 
@@ -314,7 +314,7 @@ def albumTracks(album_id):
             abort(400)
 
 
-        id = b64encode(request.json["name"].encode()).decode('utf-8')
+        id = b64encode(f"{request.json['name']}:{album_id}".encode()).decode('utf-8')
         if len(id) > ID_LENGTH_LIMIT:
             id = id[:ID_LENGTH_LIMIT]
 
